@@ -28,6 +28,32 @@ export class DungeonGenerator {
     this.height = height;
   }
 
+  private intersects(
+    room: Room,
+    rooms: Room[]
+  ): boolean {
+    return rooms.some((other) => {
+      return (
+        room.x <
+          other.x +
+            other.width +
+            2 &&
+        room.x +
+          room.width +
+          2 >
+          other.x &&
+        room.y <
+          other.y +
+            other.height +
+            2 &&
+        room.y +
+          room.height +
+          2 >
+          other.y
+      );
+    });
+  }
+
   generate(): DungeonData {
     const tiles = Array.from(
       { length: this.height },
@@ -36,9 +62,19 @@ export class DungeonGenerator {
 
     const rooms: Room[] = [];
 
-    const roomCount = randomInt(12, 18);
+    const targetRooms = randomInt(
+      12,
+      18
+    );
 
-    for (let i = 0; i < roomCount; i++) {
+    let attempts = 0;
+
+    while (
+      rooms.length < targetRooms &&
+      attempts < 200
+    ) {
+      attempts++;
+
       const room: Room = {
         x: randomInt(
           2,
@@ -52,6 +88,15 @@ export class DungeonGenerator {
         height: randomInt(6, 12)
       };
 
+      if (
+        this.intersects(
+          room,
+          rooms
+        )
+      ) {
+        continue;
+      }
+
       rooms.push(room);
 
       for (
@@ -64,14 +109,7 @@ export class DungeonGenerator {
           y < room.y + room.height;
           y++
         ) {
-          if (
-            x >= 0 &&
-            x < this.width &&
-            y >= 0 &&
-            y < this.height
-          ) {
-            tiles[y][x] = 1;
-          }
+          tiles[y][x] = 1;
         }
       }
     }
@@ -105,14 +143,7 @@ export class DungeonGenerator {
         x <= Math.max(x1, x2);
         x++
       ) {
-        if (
-          x >= 0 &&
-          x < this.width &&
-          y1 >= 0 &&
-          y1 < this.height
-        ) {
-          tiles[y1][x] = 1;
-        }
+        tiles[y1][x] = 1;
       }
 
       for (
@@ -120,14 +151,7 @@ export class DungeonGenerator {
         y <= Math.max(y1, y2);
         y++
       ) {
-        if (
-          x2 >= 0 &&
-          x2 < this.width &&
-          y >= 0 &&
-          y < this.height
-        ) {
-          tiles[y][x2] = 1;
-        }
+        tiles[y][x2] = 1;
       }
     }
 
