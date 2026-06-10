@@ -5,7 +5,7 @@
     sans-serif;
 
   color: #f8fafc;
-  background: #0f172a;
+  background: #020617;
 }
 
 * {
@@ -15,43 +15,35 @@
 }
 
 body {
-  min-height: 100vh;
+  overflow: hidden;
 }
 
 .app {
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 2rem;
+  flex-direction: column;
 }
 
-.hero {
-  max-width: 700px;
+.topbar {
+  padding: 1rem;
   text-align: center;
+  border-bottom: 1px solid #1e293b;
 }
 
-.hero h1 {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+.topbar h1 {
+  margin-bottom: 0.25rem;
 }
 
-.hero p {
-  line-height: 1.8;
-  color: #cbd5e1;
-  margin-bottom: 2rem;
+.topbar p {
+  color: #94a3b8;
 }
 
-.status {
+#game-container {
+  flex: 1;
+
   display: flex;
-  gap: 1rem;
   justify-content: center;
-}
-
-.status span {
-  border: 1px solid #334155;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
+  align-items: center;
 }

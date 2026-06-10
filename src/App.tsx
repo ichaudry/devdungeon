@@ -1,20 +1,18 @@
+import { GameCanvas } from "@ui/GameCanvas";
+
 export default function App() {
   return (
     <main className="app">
-      <div className="hero">
+      <header className="topbar">
         <h1>⚔️ DevDungeon</h1>
 
         <p>
-          A roguelike dungeon crawler where programming
-          concepts become weapons and software bugs become
-          enemies.
+          Programming concepts become weapons.
+          Bugs become enemies.
         </p>
+      </header>
 
-        <div className="status">
-          <span>Version 0.1.0</span>
-          <span>Development Started</span>
-        </div>
-      </div>
+      <GameCanvas />
     </main>
   );
 }
