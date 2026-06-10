@@ -4,131 +4,145 @@ import { Player } from "@entities/Player";
 import { DungeonGenerator } from "@systems/dungeon/DungeonGenerator";
 import { DungeonRenderer } from "@systems/dungeon/DungeonRenderer";
 import { SceneKeys } from "../SceneKeys";
+import { Minimap } from "@ui/Minimap";
 
 export class DungeonScene extends Phaser.Scene {
-  private player!: Player;
+    private player!: Player;
+    private minimap!: Minimap;
 
-  constructor() {
-    super(SceneKeys.DUNGEON);
-  }
+    private readonly tileSize = 64;
 
-  preload() {
-    const graphics = this.make.graphics({
-      x: 0,
-      y: 0,
-      add: false
-    });
+    constructor() {
+        super(SceneKeys.DUNGEON);
+    }
 
-    graphics.fillStyle(0x38bdf8);
-    graphics.fillRect(0, 0, 32, 32);
+    preload() {
+        const graphics = this.make.graphics({
+            x: 0,
+            y: 0,
+            add: false
+        });
 
-    graphics.generateTexture(
-      "__player",
-      32,
-      32
-    );
-  }
+        graphics.fillStyle(0x38bdf8);
+        graphics.fillRect(0, 0, 32, 32);
 
-  create() {
-    const mapWidth = 80;
-    const mapHeight = 80;
-    const tileSize = 64;
+        graphics.generateTexture(
+            "__player",
+            32,
+            32
+        );
+    }
 
-    const generator =
-      new DungeonGenerator(
-        mapWidth,
-        mapHeight
-      );
+    create() {
+        const mapWidth = 80;
+        const mapHeight = 80;
 
-    const dungeon =
-      generator.generate();
+        const generator =
+            new DungeonGenerator(
+                mapWidth,
+                mapHeight
+            );
 
-    const worldWidth =
-      mapWidth * tileSize;
+        const dungeon =
+            generator.generate();
 
-    const worldHeight =
-      mapHeight * tileSize;
+        const worldWidth =
+            mapWidth * this.tileSize;
 
-    this.physics.world.setBounds(
-      0,
-      0,
-      worldWidth,
-      worldHeight
-    );
+        const worldHeight =
+            mapHeight * this.tileSize;
 
-    this.cameras.main.setBounds(
-      0,
-      0,
-      worldWidth,
-      worldHeight
-    );
+        this.physics.world.setBounds(
+            0,
+            0,
+            worldWidth,
+            worldHeight
+        );
 
-    const walls =
-      DungeonRenderer.render(
-        this,
-        dungeon,
-        tileSize
-      );
+        this.cameras.main.setBounds(
+            0,
+            0,
+            worldWidth,
+            worldHeight
+        );
 
-    const spawnRoom =
-      dungeon.rooms[0];
+        const walls =
+            DungeonRenderer.render(
+                this,
+                dungeon,
+                this.tileSize
+            );
 
-    const spawnX =
-      (spawnRoom.x +
-        spawnRoom.width / 2) *
-      tileSize;
+        const spawnRoom =
+            dungeon.rooms[0];
 
-    const spawnY =
-      (spawnRoom.y +
-        spawnRoom.height / 2) *
-      tileSize;
+        const spawnX =
+            (spawnRoom.x +
+                spawnRoom.width / 2) *
+            this.tileSize;
 
-    this.player = new Player(
-      this,
-      spawnX,
-      spawnY
-    );
+        const spawnY =
+            (spawnRoom.y +
+                spawnRoom.height / 2) *
+            this.tileSize;
 
-    this.physics.add.collider(
-      this.player,
-      walls
-    );
+        this.player = new Player(
+            this,
+            spawnX,
+            spawnY
+        );
 
-    this.cameras.main.startFollow(
-      this.player,
-      true,
-      0.08,
-      0.08
-    );
+        this.physics.add.collider(
+            this.player,
+            walls
+        );
 
-    this.cameras.main.setZoom(1.25);
+        this.cameras.main.startFollow(
+            this.player,
+            true,
+            0.08,
+            0.08
+        );
 
-    this.add
-      .text(
-        20,
-        20,
-        `Rooms: ${dungeon.rooms.length}`,
-        {
-          fontSize: "18px",
-          color: "#ffffff"
-        }
-      )
-      .setScrollFactor(0);
+        this.cameras.main.setZoom(1);
 
-    this.add
-      .text(
-        20,
-        45,
-        "WASD to move",
-        {
-          fontSize: "18px",
-          color: "#94a3b8"
-        }
-      )
-      .setScrollFactor(0);
-  }
+        this.minimap = new Minimap(
+            this,
+            dungeon
+        );
 
-  update() {
-    this.player.update();
-  }
+        this.add
+            .text(
+                20,
+                20,
+                `Rooms: ${dungeon.rooms.length}`,
+                {
+                    fontSize: "18px",
+                    color: "#ffffff"
+                }
+            )
+            .setScrollFactor(0);
+
+        this.add
+            .text(
+                20,
+                45,
+                "WASD to move",
+                {
+                    fontSize: "18px",
+                    color: "#94a3b8"
+                }
+            )
+            .setScrollFactor(0);
+    }
+
+    update() {
+        this.player.update();
+
+        this.minimap.update(
+            this.player.x,
+            this.player.y,
+            this.tileSize
+        );
+    }
 }

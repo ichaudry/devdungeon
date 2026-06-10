@@ -14,36 +14,21 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   overflow: hidden;
-}
-
-.app {
-  width: 100vw;
-  height: 100vh;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.topbar {
-  padding: 1rem;
-  text-align: center;
-  border-bottom: 1px solid #1e293b;
-}
-
-.topbar h1 {
-  margin-bottom: 0.25rem;
-}
-
-.topbar p {
-  color: #94a3b8;
+  background: #020617;
 }
 
 #game-container {
-  flex: 1;
-
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
