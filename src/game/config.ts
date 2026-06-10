@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 
 import { BootScene } from "./scenes/BootScene";
+import { MenuScene } from "./scenes/MenuScene";
+import { DungeonScene } from "./scenes/DungeonScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -10,9 +12,13 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
 
   parent: "game-container",
 
-  backgroundColor: "#0f172a",
+  backgroundColor: "#020617",
 
-  scene: [BootScene],
+  scene: [
+    BootScene,
+    MenuScene,
+    DungeonScene
+  ],
 
   physics: {
     default: "arcade",
