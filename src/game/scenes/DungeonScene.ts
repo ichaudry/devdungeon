@@ -1,108 +1,162 @@
 import Phaser from "phaser";
 
 import { Player } from "@entities/Player";
+import { DungeonGenerator } from "@systems/dungeon/DungeonGenerator";
 import { SceneKeys } from "../SceneKeys";
 
 export class DungeonScene extends Phaser.Scene {
-    private player!: Player;
+  private player!: Player;
 
-    constructor() {
-        super(SceneKeys.DUNGEON);
-    }
+  constructor() {
+    super(SceneKeys.DUNGEON);
+  }
 
-    preload() {
-        const graphics = this.make.graphics({
-            x: 0,
-            y: 0,
-            add: false
-        });
+  preload() {
+    const graphics = this.make.graphics({
+      x: 0,
+      y: 0,
+      add: false
+    });
 
-        graphics.fillStyle(0x38bdf8);
-        graphics.fillRect(0, 0, 32, 32);
+    graphics.fillStyle(0x38bdf8);
+    graphics.fillRect(0, 0, 32, 32);
 
-        graphics.generateTexture(
-            "__player",
-            32,
-            32
-        );
+    graphics.generateTexture(
+      "__player",
+      32,
+      32
+    );
 
-        graphics.clear();
+    graphics.clear();
 
-        graphics.fillStyle(0x1e293b);
-        graphics.fillRect(0, 0, 64, 64);
+    graphics.fillStyle(0x1e293b);
+    graphics.fillRect(0, 0, 64, 64);
 
-        graphics.lineStyle(1, 0x334155);
+    graphics.lineStyle(1, 0x334155);
+    graphics.strokeRect(0, 0, 64, 64);
 
-        graphics.strokeRect(0, 0, 64, 64);
+    graphics.generateTexture(
+      "__floor",
+      64,
+      64
+    );
+  }
 
-        graphics.generateTexture(
-            "__floor",
-            64,
-            64
-        );
-    }
+  create() {
+    const mapWidth = 80;
+    const mapHeight = 80;
+    const tileSize = 64;
 
-    create() {
-        const worldWidth = 3000;
-        const worldHeight = 3000;
+    const generator =
+      new DungeonGenerator(
+        mapWidth,
+        mapHeight
+      );
 
-        this.physics.world.setBounds(
-            0,
-            0,
-            worldWidth,
-            worldHeight
-        );
+    const dungeon =
+      generator.generate();
 
-        this.cameras.main.setBounds(
-            0,
-            0,
-            worldWidth,
-            worldHeight
-        );
+    const worldWidth =
+      mapWidth * tileSize;
 
-        for (let x = 0; x < worldWidth; x += 64) {
-            for (
-                let y = 0;
-                y < worldHeight;
-                y += 64
-            ) {
-                this.add.image(
-                    x,
-                    y,
-                    "__floor"
-                ).setOrigin(0);
-            }
-        }
+    const worldHeight =
+      mapHeight * tileSize;
 
-        this.player = new Player(
-            this,
-            worldWidth / 2,
-            worldHeight / 2
-        );
+    this.physics.world.setBounds(
+      0,
+      0,
+      worldWidth,
+      worldHeight
+    );
 
-        this.cameras.main.startFollow(
-            this.player,
-            true,
-            0.08,
-            0.08
-        );
+    this.cameras.main.setBounds(
+      0,
+      0,
+      worldWidth,
+      worldHeight
+    );
 
-        this.cameras.main.setZoom(1.25);
+    for (
+      let y = 0;
+      y < dungeon.tiles.length;
+      y++
+    ) {
+      for (
+        let x = 0;
+        x < dungeon.tiles[y].length;
+        x++
+      ) {
+        const walkable =
+          dungeon.tiles[y][x] === 1;
 
         this.add
-            .text(
-                20,
-                20,
-                "WASD to move",
-                {
-                    fontSize: "18px",
-                    color: "#ffffff"
-                }
-            )
-            .setScrollFactor(0);
+          .rectangle(
+            x * tileSize,
+            y * tileSize,
+            tileSize,
+            tileSize,
+            walkable
+              ? 0x1e293b
+              : 0x0f172a
+          )
+          .setOrigin(0);
+      }
     }
 
-    update() {
-        this.player.update();
-    }
+    const spawnRoom =
+      dungeon.rooms[0];
+
+    const spawnX =
+      (spawnRoom.x +
+        spawnRoom.width / 2) *
+      tileSize;
+
+    const spawnY =
+      (spawnRoom.y +
+        spawnRoom.height / 2) *
+      tileSize;
+
+    this.player = new Player(
+      this,
+      spawnX,
+      spawnY
+    );
+
+    this.cameras.main.startFollow(
+      this.player,
+      true,
+      0.08,
+      0.08
+    );
+
+    this.cameras.main.setZoom(1.25);
+
+    this.add
+      .text(
+        20,
+        20,
+        `Rooms: ${dungeon.rooms.length}`,
+        {
+          fontSize: "18px",
+          color: "#ffffff"
+        }
+      )
+      .setScrollFactor(0);
+
+    this.add
+      .text(
+        20,
+        45,
+        "WASD to move",
+        {
+          fontSize: "18px",
+          color: "#94a3b8"
+        }
+      )
+      .setScrollFactor(0);
+  }
+
+  update() {
+    this.player.update();
+  }
 }
