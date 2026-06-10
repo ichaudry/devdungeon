@@ -1,0 +1,57 @@
+:root {
+  font-family:
+    Inter,
+    system-ui,
+    sans-serif;
+
+  color: #f8fafc;
+  background: #0f172a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 2rem;
+}
+
+.hero {
+  max-width: 700px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  line-height: 1.8;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+}
+
+.status {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.status span {
+  border: 1px solid #334155;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+}
