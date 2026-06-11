@@ -23,6 +23,12 @@ DevDungeon is a developer-themed roguelike built with Phaser and TypeScript. Exp
 * World boundaries
 * Wall collision detection
 
+### Enemies
+* Procedural enemy spawning
+* Random wandering AI
+* Room-based enemy placement
+* Real-time minimap tracking
+
 ### UI
 
 * Main menu
@@ -124,7 +130,7 @@ src/
 ### Gameplay
 
 * [x] Enemy spawning
-* [ ] Enemy AI
+* [x] Enemy AI
 * [ ] Combat system
 * [ ] Health system
 * [ ] Experience system

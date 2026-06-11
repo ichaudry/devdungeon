@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { DungeonData } from "@systems/dungeon/DungeonGenerator";
+import { Enemy } from "@entities/Enemy";
 
 export class Minimap {
   private readonly scale = 2;
@@ -7,11 +8,17 @@ export class Minimap {
   private readonly offsetX: number;
   private readonly offsetY: number;
 
-  private playerMarker: Phaser.GameObjects.Rectangle;
+  private playerMarker:
+    Phaser.GameObjects.Rectangle;
+
+  private enemyMarkers:
+    Phaser.GameObjects.Rectangle[] =
+    [];
 
   constructor(
     scene: Phaser.Scene,
-    dungeon: DungeonData
+    dungeon: DungeonData,
+    enemies: Enemy[]
   ) {
     const width =
       dungeon.tiles[0].length *
@@ -95,12 +102,31 @@ export class Minimap {
     this.playerMarker.setDepth(
       1002
     );
+
+    for (const enemy of enemies) {
+      const marker =
+        scene.add.rectangle(
+          this.offsetX,
+          this.offsetY,
+          4,
+          4,
+          0xa855f7
+        );
+
+      marker.setScrollFactor(0);
+      marker.setDepth(1002);
+
+      this.enemyMarkers.push(
+        marker
+      );
+    }
   }
 
   update(
     playerX: number,
     playerY: number,
-    tileSize: number
+    tileSize: number,
+    enemies: Enemy[]
   ) {
     this.playerMarker.x =
       this.offsetX +
@@ -111,5 +137,27 @@ export class Minimap {
       this.offsetY +
       (playerY / tileSize) *
         this.scale;
+
+    for (
+      let i = 0;
+      i < enemies.length;
+      i++
+    ) {
+      const enemy =
+        enemies[i];
+
+      const marker =
+        this.enemyMarkers[i];
+
+      marker.x =
+        this.offsetX +
+        (enemy.x / tileSize) *
+          this.scale;
+
+      marker.y =
+        this.offsetY +
+        (enemy.y / tileSize) *
+          this.scale;
+    }
   }
 }
