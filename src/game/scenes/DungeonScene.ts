@@ -17,6 +17,13 @@ export class DungeonScene extends Phaser.Scene {
 
     private enemies: Enemy[] = [];
 
+    private kills = 0;
+
+    private hpText!: Phaser.GameObjects.Text;
+    private killText!: Phaser.GameObjects.Text;
+    private roomCountText!: Phaser.GameObjects.Text;
+    private enemyCountText!: Phaser.GameObjects.Text;
+
     private readonly tileSize = 64;
 
     constructor() {
@@ -148,35 +155,63 @@ export class DungeonScene extends Phaser.Scene {
             this.enemies
         );
 
-        this.add
-            .text(
-                20,
-                20,
-                `Rooms: ${dungeon.rooms.length}`,
-                {
-                    fontSize: "18px",
-                    color: "#ffffff"
-                }
-            )
-            .setScrollFactor(0);
+        this.roomCountText =
+            this.add
+                .text(
+                    20,
+                    20,
+                    `Rooms: ${dungeon.rooms.length}`,
+                    {
+                        fontSize: "18px",
+                        color: "#ffffff"
+                    }
+                )
+                .setScrollFactor(0);
+
+        this.hpText =
+            this.add
+                .text(
+                    20,
+                    45,
+                    "HP: 10",
+                    {
+                        fontSize: "18px",
+                        color: "#22c55e"
+                    }
+                )
+                .setScrollFactor(0);
+
+        this.killText =
+            this.add
+                .text(
+                    20,
+                    70,
+                    "Kills: 0",
+                    {
+                        fontSize: "18px",
+                        color: "#f59e0b"
+                    }
+                )
+                .setScrollFactor(0);
+
+        this.enemyCountText =
+            this.add
+                .text(
+                    20,
+                    95,
+                    `Enemies: ${this.enemies.length}`,
+                    {
+                        fontSize: "18px",
+                        color: "#a855f7"
+                    }
+                )
+                .setScrollFactor(0);
 
         this.add
             .text(
                 20,
-                45,
-                `Enemies: ${this.enemies.length}`,
-                {
-                    fontSize: "18px",
-                    color: "#a855f7"
-                }
-            )
-            .setScrollFactor(0);
-
-        this.add
-            .text(
-                20,
-                70,
-                "WASD to move",
+                120,
+                "WASD Move | SPACE Attack",
                 {
                     fontSize: "18px",
                     color: "#94a3b8"
@@ -185,12 +220,72 @@ export class DungeonScene extends Phaser.Scene {
             .setScrollFactor(0);
     }
 
+    private attackEnemies() {
+        for (
+            let i =
+                this.enemies.length - 1;
+            i >= 0;
+            i--
+        ) {
+            const enemy =
+                this.enemies[i];
+
+            if (!enemy.active) {
+                continue;
+            }
+
+            const distance =
+                Phaser.Math.Distance.Between(
+                    this.player.x,
+                    this.player.y,
+                    enemy.x,
+                    enemy.y
+                );
+
+            if (distance <= 80) {
+                enemy.takeDamage(1);
+
+                if (
+                    enemy.isDead()
+                ) {
+                    this.enemies.splice(
+                        i,
+                        1
+                    );
+
+                    this.kills++;
+                }
+            }
+        }
+    }
+
     update() {
         this.player.update();
+
+        if (
+            this.player.attackPressed() &&
+            this.player.canAttack()
+        ) {
+            this.player.performAttack();
+
+            this.attackEnemies();
+        }
 
         for (const enemy of this.enemies) {
             enemy.update();
         }
+
+        this.hpText.setText(
+            `HP: ${this.player.getHealth()}`
+        );
+
+        this.killText.setText(
+            `Kills: ${this.kills}`
+        );
+
+        this.enemyCountText.setText(
+            `Enemies: ${this.enemies.length}`
+        );
 
         this.minimap.update(
             this.player.x,

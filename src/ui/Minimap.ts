@@ -8,18 +8,21 @@ export class Minimap {
   private readonly offsetX: number;
   private readonly offsetY: number;
 
-  private playerMarker:
-    Phaser.GameObjects.Rectangle;
+  private playerMarker!: Phaser.GameObjects.Rectangle;
 
   private enemyMarkers:
     Phaser.GameObjects.Rectangle[] =
     [];
+
+  private scene: Phaser.Scene;
 
   constructor(
     scene: Phaser.Scene,
     dungeon: DungeonData,
     enemies: Enemy[]
   ) {
+    this.scene = scene;
+
     const width =
       dungeon.tiles[0].length *
       this.scale;
@@ -103,9 +106,30 @@ export class Minimap {
       1002
     );
 
-    for (const enemy of enemies) {
+    this.syncEnemyMarkers(
+      enemies
+    );
+  }
+
+  private syncEnemyMarkers(
+    enemies: Enemy[]
+  ) {
+    while (
+      this.enemyMarkers.length >
+      enemies.length
+    ) {
       const marker =
-        scene.add.rectangle(
+        this.enemyMarkers.pop();
+
+      marker?.destroy();
+    }
+
+    while (
+      this.enemyMarkers.length <
+      enemies.length
+    ) {
+      const marker =
+        this.scene.add.rectangle(
           this.offsetX,
           this.offsetY,
           4,
@@ -128,6 +152,10 @@ export class Minimap {
     tileSize: number,
     enemies: Enemy[]
   ) {
+    this.syncEnemyMarkers(
+      enemies
+    );
+
     this.playerMarker.x =
       this.offsetX +
       (playerX / tileSize) *

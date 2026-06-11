@@ -8,6 +8,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   private nextDecision = 0;
 
+  private health = 3;
+
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -21,6 +23,35 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
 
     this.chooseDirection();
+  }
+
+  getHealth() {
+    return this.health;
+  }
+
+  isDead() {
+    return this.health <= 0;
+  }
+
+  takeDamage(
+    amount: number
+  ) {
+    this.health -= amount;
+
+    this.setTint(0xff5555);
+
+    this.scene.time.delayedCall(
+      100,
+      () => {
+        if (this.active) {
+          this.clearTint();
+        }
+      }
+    );
+
+    if (this.health <= 0) {
+      this.destroy();
+    }
   }
 
   private chooseDirection() {
@@ -46,6 +77,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
+    if (
+      !this.active
+    ) {
+      return;
+    }
+
     if (
       Date.now() >
       this.nextDecision

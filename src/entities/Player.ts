@@ -10,6 +10,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   private readonly speed = 250;
 
+  private health = 10;
+
+  private attackKey!: Phaser.Input.Keyboard.Key;
+
+  private lastAttack = 0;
+
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -22,12 +28,39 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.setCollideWorldBounds(true);
 
-    this.cursors = scene.input.keyboard!.addKeys({
-      w: Phaser.Input.Keyboard.KeyCodes.W,
-      a: Phaser.Input.Keyboard.KeyCodes.A,
-      s: Phaser.Input.Keyboard.KeyCodes.S,
-      d: Phaser.Input.Keyboard.KeyCodes.D
-    }) as typeof this.cursors;
+    this.cursors =
+      scene.input.keyboard!.addKeys({
+        w: Phaser.Input.Keyboard.KeyCodes.W,
+        a: Phaser.Input.Keyboard.KeyCodes.A,
+        s: Phaser.Input.Keyboard.KeyCodes.S,
+        d: Phaser.Input.Keyboard.KeyCodes.D
+      }) as typeof this.cursors;
+
+    this.attackKey =
+      scene.input.keyboard!.addKey(
+        Phaser.Input.Keyboard.KeyCodes.SPACE
+      );
+  }
+
+  getHealth() {
+    return this.health;
+  }
+
+  canAttack() {
+    return (
+      Date.now() - this.lastAttack >
+      300
+    );
+  }
+
+  performAttack() {
+    this.lastAttack = Date.now();
+  }
+
+  attackPressed() {
+    return Phaser.Input.Keyboard.JustDown(
+      this.attackKey
+    );
   }
 
   update() {
@@ -50,10 +83,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       velocityY = 1;
     }
 
-    const vector = new Phaser.Math.Vector2(
-      velocityX,
-      velocityY
-    ).normalize();
+    const vector =
+      new Phaser.Math.Vector2(
+        velocityX,
+        velocityY
+      ).normalize();
 
     this.setVelocity(
       vector.x * this.speed,
