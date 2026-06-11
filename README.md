@@ -29,6 +29,7 @@ DevDungeon is a developer-themed roguelike built with Phaser and TypeScript. Exp
 * Dungeon minimap
 * Room counter
 * Basic HUD
+* Enemy counter
 
 ### Architecture
 
@@ -36,6 +37,7 @@ DevDungeon is a developer-themed roguelike built with Phaser and TypeScript. Exp
 * TypeScript codebase
 * Modular dungeon generation system
 * Dedicated rendering systems
+* Enemy spawning system
 
 ---
 
@@ -121,7 +123,7 @@ src/
 
 ### Gameplay
 
-* [ ] Enemy spawning
+* [x] Enemy spawning
 * [ ] Enemy AI
 * [ ] Combat system
 * [ ] Health system
